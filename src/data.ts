@@ -1,7 +1,7 @@
 import boards from './boards.json'
 
 /* Images are generated into public/img from assets/ by `npm run images`. */
-const img = (path: string) => `/img/${path}`
+const img = (path: string) => `img/${path}`
 const frames = (name: string, count: number) => Array.from({ length: count }, (_, i) => img(`garments/${name}-${i + 1}.webp`))
 
 export const IMAGES = {

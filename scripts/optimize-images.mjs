@@ -90,7 +90,7 @@ async function splitBoard(name, file) {
     const out = `boards/${name}-${pages.length + 1}.webp`
     const region = { left: start, top, width: end - start + 1, height: bottom - top + 1 }
     await save(sharp(src(file)).extract(region), out)
-    pages.push({ src: `/img/${out}`, width: region.width, height: region.height })
+    pages.push({ src: `img/${out}`, width: region.width, height: region.height })
   }
   return pages
 }
