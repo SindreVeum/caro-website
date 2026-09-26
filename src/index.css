@@ -14,6 +14,8 @@
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
+/* keep the scrollbar's space when an overlay locks scrolling, so the page doesn't shift sideways */
+html{scrollbar-gutter:stable;}
 body{
   background:var(--cream-page);
   color:var(--brown-deep);
@@ -266,7 +268,6 @@ footer.site-footer{
   --board-top:10vh;
   --board-bottom:9vh;
   --shadow-room:48px; /* scroller extends past the pages so their shadows aren't clipped */
-  --board-start:calc(min(21.56vw, 273px) + 6.5vw); /* first page starts clear of the corner garment */
   --edge-fade:5vw;
   position:fixed; inset:0; z-index:50;
   opacity:0; pointer-events:none;
@@ -308,7 +309,7 @@ footer.site-footer{
 #board-track{
   display:flex; align-items:center;
   height:100%; width:max-content;
-  padding:var(--shadow-room) 8vw var(--shadow-room) var(--board-start);
+  padding:var(--shadow-room) 8vw; /* left padding is set in ProjectViewer to centre the first page */
   gap:2.6vw;
 }
 #board-track img{
@@ -338,6 +339,8 @@ footer.site-footer{
   opacity:0; transition:opacity .35s var(--ease);
 }
 #cg-frame.show{ opacity:1; }
+/* on close the copy flies out of the corner, so the corner empties at once rather than ghosting behind it */
+#project-viewer:not(.open) #cg-frame{ transition:none; }
 @keyframes garmentSway{
   0%,100%{ transform:rotate(-1.1deg); }
   50%{ transform:rotate(1.1deg); }

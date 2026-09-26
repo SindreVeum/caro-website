@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { PROJECTS, type Project, type ProjectId } from './data'
+import { CAROUSEL_CORNER_FRAMES, PROJECTS, SOCIAL_PHOTOS, type Project, type ProjectId } from './data'
 import { useFlyGarment } from './hooks'
 import { BelowFold } from './components/BelowFold'
 import { CarouselViewer } from './components/CarouselViewer'
@@ -14,15 +14,23 @@ export default function App() {
   const [lifted, setLifted] = useState<ProjectId | null>(null)
   const flyer = useFlyGarment()
 
-  // fetch and decode the flight and corner frames while idle, so the first click flies off at once
+  // fetch and decode what the overlays show while idle, so nothing pops in when one opens:
+  // flight and corner frames first, then the opening pages of each project and the carousel photos
   useEffect(() => {
-    const warm = () => Object.values(PROJECTS).forEach((p: Project) => {
-      for (const src of [...(p.flight ?? []), ...(p.garment ?? [])]) {
+    const warm = () => {
+      const projects: Project[] = Object.values(PROJECTS)
+      const srcs = [
+        ...projects.flatMap((p) => [...(p.flight ?? []), ...(p.garment ?? [])]),
+        ...projects.flatMap((p) => p.pages.slice(0, 2).map((page) => page.src)),
+        ...CAROUSEL_CORNER_FRAMES,
+        ...SOCIAL_PHOTOS,
+      ]
+      for (const src of srcs) {
         const img = new Image()
         img.src = src
         img.decode().catch(() => {})
       }
-    })
+    }
     if ('requestIdleCallback' in window) {
       const id = requestIdleCallback(warm, { timeout: 2000 })
       return () => cancelIdleCallback(id)
@@ -56,7 +64,7 @@ export default function App() {
         </HeroPhoto>
       </div>
 
-      <ProjectViewer session={session} open={projectOpen} onClose={closeProject} onLift={setLifted} fly={flyer.fly} cancelFly={flyer.cancel} />
+      <ProjectViewer session={session} open={projectOpen} onClose={closeProject} onLift={setLifted} fly={flyer.fly} cancelFly={flyer.cancel} flying={flyer.flying} />
       <CarouselViewer open={carouselOpen} onClose={closeCarousel} />
 
       <div id="fly-garment" ref={flyer.ref} aria-hidden="true" />

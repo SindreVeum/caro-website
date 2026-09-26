@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { flushSync } from 'react-dom'
 import { PROJECTS, type Project, type ProjectId } from '../data'
 import { createGlide, type Fly } from '../hooks'
 import { CloseButton, CyclingImage } from './shared'
@@ -6,7 +7,7 @@ import { CloseButton, CyclingImage } from './shared'
 /** A new object per open, so reopening the same project replays the intro. */
 export type ProjectSession = { id: ProjectId; trigger: HTMLElement }
 
-export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }: {
+export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly, flying }: {
   session: ProjectSession | null
   open: boolean
   onClose: () => void
@@ -14,12 +15,15 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
   onLift: (id: ProjectId | null) => void
   fly: Fly
   cancelFly: () => void
+  /** the flying copy's current rect, if it's still in the air */
+  flying: () => DOMRect | null
 }) {
   const project: Project | null = session ? PROJECTS[session.id] : null
   const [garmentVisible, setGarmentVisible] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const cornerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
 
   // vertical wheel pans the gallery; mouse drag with momentum (touch scrolls natively)
   useEffect(() => {
@@ -68,6 +72,20 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
     }
   }, [])
 
+  // pad the track so the first page opens centred on screen (page widths vary, so this is measured)
+  useEffect(() => {
+    const scroller = scrollRef.current!
+    const track = trackRef.current!
+    const centre = () => {
+      const first = track.firstElementChild as HTMLElement | null
+      if (first) track.style.paddingLeft = `${Math.max(0, (scroller.clientWidth - first.offsetWidth) / 2)}px`
+    }
+    centre()
+    const ro = new ResizeObserver(centre)
+    ro.observe(scroller)
+    return () => ro.disconnect()
+  }, [project])
+
   // intro: reset, then fly the clicked garment into the corner
   useEffect(() => {
     if (!open || !session) return
@@ -83,7 +101,8 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
         fly(session.trigger.getBoundingClientRect(), cornerRef.current!.getBoundingClientRect(), p.flight, {
           fromFilter: getComputedStyle(session.trigger).filter,
           onStart: () => onLift(session.id),
-          onLand: () => setGarmentVisible(true),
+          // committed right away so the corner starts fading in on the same frame the copy starts fading out
+          onLand: () => flushSync(() => setGarmentVisible(true)),
           dissolve: true,
         })
       } else if (p.garment) {
@@ -94,9 +113,11 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
   }, [open, session, fly, onLift])
 
   const handleClose = useCallback(() => {
-    if (garmentVisible && session && project?.flight) {
+    // closed mid-flight: turn around from wherever the copy is instead of making it vanish
+    const from = garmentVisible ? cornerRef.current!.getBoundingClientRect() : flying()
+    if (from && session && project?.flight) {
       // fly back, turning in reverse, and settle exactly onto its place in the scene, which then reappears
-      fly(cornerRef.current!.getBoundingClientRect(), session.trigger.getBoundingClientRect(), [...project.flight].reverse(), {
+      fly(from, session.trigger.getBoundingClientRect(), [...project.flight].reverse(), {
         toFilter: getComputedStyle(session.trigger).filter,
         onLand: () => onLift(null),
       })
@@ -106,7 +127,7 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
     }
     setGarmentVisible(false)
     onClose()
-  }, [garmentVisible, session, project, fly, cancelFly, onClose, onLift])
+  }, [garmentVisible, session, project, fly, cancelFly, flying, onClose, onLift])
 
   useEffect(() => {
     if (!open) return
@@ -121,7 +142,7 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
       <CloseButton label="Close project" onClick={handleClose} />
 
       <div id="board-scroll" ref={scrollRef} tabIndex={-1}>
-        <div id="board-track">
+        <div id="board-track" ref={trackRef}>
           {project?.pages.map((page, i) => (
             <img
               key={page.src}
@@ -130,7 +151,6 @@ export function ProjectViewer({ session, open, onClose, onLift, fly, cancelFly }
               height={page.height}
               style={{ '--ratio': page.width / page.height } as CSSProperties}
               alt={`${project.heading}, page ${i + 1}`}
-              loading={i < 2 ? 'eager' : 'lazy'}
               decoding="async"
               draggable={false}
             />

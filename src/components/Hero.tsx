@@ -1,5 +1,5 @@
-import { useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react'
-import { HERO_GARMENTS, sceneImage, type HeroGarment, type ProjectId } from '../data'
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react'
+import { HERO_GARMENTS, PROJECTS, sceneImage, type HeroGarment, type ProjectId } from '../data'
 import { HeroPhoto } from './shared'
 
 const MASK_WIDTH = 200
@@ -45,6 +45,20 @@ export function Hero({ lifted, onOpenProject }: {
   // hover tip follows the cursor above garments; moved directly so mouse moves don't re-render
   const tipRef = useRef<HTMLDivElement>(null)
   const [tipLabel, setTipLabel] = useState('')
+
+  // the tip is fixed to the viewport, so it would float away from the garment while the page scrolls
+  useEffect(() => {
+    if (!hovered) return
+    const onScroll = () => setHovered(null)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [hovered])
+
+  // hovering is a strong hint: fetch the rest of that project's pages before the click
+  useEffect(() => {
+    if (!hovered) return
+    for (const page of PROJECTS[hovered].pages) new Image().src = page.src
+  }, [hovered])
 
   /** topmost garment whose opaque pixels are under the point */
   const hitTest = (x: number, y: number) => {

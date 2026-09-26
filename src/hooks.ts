@@ -3,6 +3,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 /** Steps through `frames` every `ms` while `active`, starting from the first frame; keeps the last frame when paused. */
 export function useFrameCycle(frames: readonly string[], active: boolean, ms = 333): string | undefined {
   const [tick, setTick] = useState(0)
+  // restart from the first frame in the same render that activates, so a stale frame never flashes
+  const [wasActive, setWasActive] = useState(active)
+  if (active !== wasActive) {
+    setWasActive(active)
+    if (active) setTick(0)
+  }
   // warm up the frames so swapping them never waits on a load or decode
   useEffect(() => {
     if (!active) return
@@ -14,7 +20,6 @@ export function useFrameCycle(frames: readonly string[], active: boolean, ms = 3
   }, [active, frames])
   useEffect(() => {
     if (!active) return
-    setTick(0)
     const id = setInterval(() => setTick((n) => n + 1), ms)
     return () => clearInterval(id)
   }, [active, ms])
@@ -72,7 +77,7 @@ export type FlyOptions = {
   onStart?: () => void
   /** called on arrival */
   onLand?: () => void
-  /** after landing, hold while the destination fades in underneath, then dissolve; otherwise vanish at once */
+  /** after landing, crossfade into the destination as it fades in underneath; otherwise vanish at once */
   dissolve?: boolean
 }
 export type Fly = (from: DOMRect, to: DOMRect, frames: readonly string[], opts?: FlyOptions) => void
@@ -154,11 +159,18 @@ export function useFlyGarment() {
 
       onLand?.()
       if (!dissolve) return cancel()
-      anim.current = el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, delay: 400, easing: 'ease-out', fill: 'forwards' })
+      // same timing as the corner's fade-in (#cg-frame), so the two frames trade places instead of doubling up
+      anim.current = el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, easing: EASE, fill: 'forwards' })
       await anim.current.finished.catch(() => {})
       if (id === run.current) cancel()
     }
 
-    return { ref, fly, cancel }
+    /** where the flying copy is right now, or null when nothing is in the air */
+    const flying = () => {
+      const el = ref.current
+      return el && anim.current && el.style.visibility === 'visible' ? el.getBoundingClientRect() : null
+    }
+
+    return { ref, fly, cancel, flying }
   }, [])
 }
