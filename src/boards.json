@@ -1,0 +1,100 @@
+{
+  "esmod": [
+    {
+      "src": "/img/boards/esmod-1.webp",
+      "width": 1722,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-2.webp",
+      "width": 1705,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-3.webp",
+      "width": 1698,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-4.webp",
+      "width": 1659,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-5.webp",
+      "width": 1770,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-6.webp",
+      "width": 1700,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-7.webp",
+      "width": 1722,
+      "height": 1256
+    },
+    {
+      "src": "/img/boards/esmod-8.webp",
+      "width": 1723,
+      "height": 1256
+    }
+  ],
+  "livyCyclone": [
+    {
+      "src": "/img/boards/livyCyclone-1.webp",
+      "width": 2084,
+      "height": 1355
+    },
+    {
+      "src": "/img/boards/livyCyclone-2.webp",
+      "width": 2084,
+      "height": 1355
+    },
+    {
+      "src": "/img/boards/livyCyclone-3.webp",
+      "width": 1374,
+      "height": 1355
+    }
+  ],
+  "livyBloom": [
+    {
+      "src": "/img/boards/livyBloom-1.webp",
+      "width": 2040,
+      "height": 1367
+    },
+    {
+      "src": "/img/boards/livyBloom-2.webp",
+      "width": 2040,
+      "height": 1367
+    },
+    {
+      "src": "/img/boards/livyBloom-3.webp",
+      "width": 2041,
+      "height": 1367
+    },
+    {
+      "src": "/img/boards/livyBloom-4.webp",
+      "width": 1682,
+      "height": 1367
+    }
+  ],
+  "cvmindmap": [
+    {
+      "src": "/img/boards/cvmindmap-1.webp",
+      "width": 982,
+      "height": 1398
+    },
+    {
+      "src": "/img/boards/cvmindmap-2.webp",
+      "width": 982,
+      "height": 1398
+    },
+    {
+      "src": "/img/boards/cvmindmap-3.webp",
+      "width": 1165,
+      "height": 1398
+    }
+  ]
+}

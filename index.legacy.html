@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Caroline Ehrngren — Fashion Designer &amp; Product Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Mrs+Saint+Delafield&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream-wall:#c9beae;
+    --cream-page:#f4efe6;
+    --cream-panel:#ece4d6;
+    --cream-panel-2:#efe8db;
+    --wood-dark:#241209;
+    --brown-deep:#452209;
+    --brown-mid:#6e3f18;
+    --brown-line:#8a5a34;
+    --brown-soft:#a97f52;
+    --ease: cubic-bezier(.22,.61,.24,1);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream-page);
+    color:var(--brown-deep);
+    font-family:'Cormorant Garamond', serif;
+    overflow-x:hidden;
+    width:100%;
+  }
+  body.locked{overflow:hidden; height:100vh;}
+  ::selection{background:var(--brown-soft); color:#fff;}
+
+  .script{ font-family:'Snell Roundhand', 'Mrs Saint Delafield', cursive; font-weight:700; }
+  .bodoni{ font-family:'Bodoni Moda', serif; }
+
+  a{ color:inherit; text-decoration:none; }
+
+  /* ================= HERO / EXPERIENCE VIEW ================= */
+  #hero{
+    position:relative;
+    width:100%;
+    height:100vh;
+    min-height:560px;
+    background:var(--cream-wall);
+    overflow:hidden;
+    border-radius:0 0 36px 36px;
+  }
+  #hero-photo{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    background-image:url('assets/asset-78b6f83b72.jpg');
+    background-size:cover;
+    background-position:center center;
+    transition:filter 1.1s var(--ease), transform 1.1s var(--ease);
+  }
+  .overlay-open #hero-photo{
+    filter:brightness(0.62) saturate(0.85);
+    transform:scale(1.035);
+  }
+
+  #hero-identity{
+    position:absolute; left:0; right:0; top:3%;
+    text-align:center; z-index:3;
+    transition:opacity .6s var(--ease), transform .6s var(--ease);
+  }
+  .overlay-open #hero-identity{ opacity:0; transform:translateY(-14px); pointer-events:none; }
+  #hero-name{
+    font-family:'Snell Roundhand', 'Mrs Saint Delafield', cursive;
+    font-weight:700;
+    font-size:clamp(2.6rem, 8vw, 5.6rem);
+    color:var(--brown-mid);
+    margin:0;
+    line-height:1;
+    text-shadow:0 1px 0 rgba(255,255,255,.15);
+  }
+  #hero-title{
+    font-family:'Bodoni Moda', serif;
+    font-weight:700;
+    letter-spacing:.04em;
+    font-size:clamp(.85rem, 1.7vw, 1.45rem);
+    color:var(--brown-mid);
+    margin:.2em 0 0;
+  }
+
+  #hero-cue{
+    position:absolute; left:4%; top:5%; z-index:3;
+    font-family:'Bodoni Moda', serif;
+    font-weight:600;
+    font-size:.68rem;
+    letter-spacing:.14em;
+    line-height:1.5;
+    color:#efe8dc;
+    text-shadow:0 1px 3px rgba(0,0,0,.35);
+    max-width:130px;
+    transition:opacity .5s var(--ease);
+    animation:cuePulse 3.6s ease-in-out infinite;
+  }
+  .overlay-open #hero-cue{ opacity:0; animation:none; }
+  @keyframes cuePulse{ 0%,100%{opacity:.75} 50%{opacity:1} }
+
+  /* garment hotspots live inside hero-photo, positioned by % of that layer */
+  .hotspot{
+    position:absolute;
+    cursor:pointer;
+    z-index:4;
+    background:transparent;
+    border:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .hotspot .glow{
+    position:absolute; inset:-6%;
+    border-radius:6px;
+    opacity:0;
+    background:radial-gradient(ellipse at center, rgba(255,241,214,0.30), rgba(255,241,214,0) 70%);
+    transition:opacity .5s var(--ease);
+    pointer-events:none;
+  }
+  .hotspot:hover .glow, .hotspot:focus-visible .glow{ opacity:1; }
+  .hotspot:hover, .hotspot:focus-visible{ transform:scale(1.012); }
+  .hotspot{ transition:transform .6s var(--ease); }
+
+  #hover-tip{
+    position:fixed;
+    left:0; top:0;
+    transform:translate(-50%, -130%);
+    white-space:nowrap;
+    font-family:'Bodoni Moda', serif;
+    font-weight:600;
+    font-size:.82rem;
+    letter-spacing:.09em;
+    color:#3a2312;
+    background:rgba(241,234,222,0.96);
+    padding:.5em 1.05em;
+    border-radius:14px;
+    box-shadow:0 8px 22px rgba(20,10,4,.22);
+    opacity:0;
+    pointer-events:none;
+    z-index:30;
+    transition:opacity .25s var(--ease);
+    will-change:transform, left, top;
+  }
+  #hover-tip.show{ opacity:1; }
+
+  #fly-garment{
+    position:fixed;
+    z-index:65;
+    pointer-events:none;
+    opacity:0;
+    object-fit:contain;
+    -webkit-mask-image:radial-gradient(ellipse 58% 56% at 50% 48%, #000 55%, transparent 100%);
+    mask-image:radial-gradient(ellipse 58% 56% at 50% 48%, #000 55%, transparent 100%);
+  }
+  #fly-garment.flying{
+    transition:top .9s var(--ease), left .9s var(--ease), width .9s var(--ease), height .9s var(--ease);
+  }
+
+  #hs-esmod{ left:37%; width:10%; top:15%; height:80%; }
+  #hs-livy-a{ left:47%; width:5%; top:28%; height:34%; }
+  #hs-livy-b{ left:52%; width:5.5%; top:28%; height:34%; }
+
+  /* ================= HOMEPAGE SCROLL SECTIONS ================= */
+  #below-fold{
+    position:relative;
+    background:var(--cream-page);
+    padding:9vh 6vw 9vh;
+  }
+  .section-row{
+    display:flex; gap:2.2vw; flex-wrap:wrap; align-items:flex-start;
+    max-width:1300px; margin:0 auto;
+  }
+
+  .panel{
+    background:var(--cream-panel);
+    border-radius:22px;
+    padding:2.2rem 2.4rem;
+  }
+  #contact-panel{ flex:1 1 66%; min-width:460px; min-height:300px; position:relative; }
+  #contact-panel h3{
+    font-family:'Bodoni Moda', serif; font-weight:700; letter-spacing:.06em;
+    font-size:1.35rem; margin:0 0 1.4rem; color:var(--brown-mid);
+  }
+  .contact-links{ display:flex; flex-direction:column; gap:.7rem; font-size:1.2rem; }
+  .contact-links a{ display:inline-block; border-bottom:1px solid transparent; transition:border-color .3s; width:fit-content;}
+  .contact-links a:hover{ border-color:var(--brown-mid); }
+
+  .scallop-frame{
+    width:100%; max-width:560px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    transition:transform .45s var(--ease);
+  }
+  .scallop-frame img{ width:100%; height:auto; display:block; }
+  #contact-panel .scallop-frame{
+    position:absolute; right:5%; top:50%;
+    width:32%; max-width:280px;
+    transform:translateY(-50%);
+    cursor:pointer;
+  }
+  #contact-panel .scallop-frame:hover{ transform:translateY(-50%) scale(1.035); }
+
+  #carousel-panel{
+    flex:1 1 26%; min-width:220px;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    cursor:pointer; overflow:visible; position:relative;
+    background:transparent;
+  }
+  #carousel-panel .mini-carousel-wrap{
+    width:96%; max-width:420px; aspect-ratio:640/508; position:relative;
+    animation:carouselDrift 9s ease-in-out infinite;
+  }
+  #carousel-panel img{ width:100%; height:100%; object-fit:contain; }
+  @keyframes carouselDrift{
+    0%,100%{ transform:rotate(-0.8deg); }
+    50%{ transform:rotate(0.8deg); }
+  }
+  #carousel-panel .cap{
+    position:absolute; left:50%; top:58%; transform:translate(-50%,-50%);
+    font-family:'Bodoni Moda', serif; font-weight:700; letter-spacing:.03em;
+    font-size:1.28rem; color:var(--brown-mid); text-align:center;
+    background:rgba(253,239,188,.92); padding:.5em .8em; border-radius:14px;
+    width:64%; line-height:1.2;
+  }
+  #carousel-panel{ transition:transform .45s var(--ease); }
+  #carousel-panel:hover{ transform:scale(1.02); }
+
+  footer.site-footer{
+    text-align:center; font-family:'Bodoni Moda', serif; font-size:.72rem;
+    letter-spacing:.12em; color:var(--brown-soft); margin-top:5vh; opacity:.8;
+  }
+
+  /* ================= PROJECT VIEWER OVERLAY ================= */
+  #project-viewer{
+    position:fixed; inset:0; z-index:50;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .7s var(--ease);
+  }
+  #project-viewer.open{ opacity:1; pointer-events:auto; }
+
+  #project-sheet{
+    position:relative;
+    width:92vw; height:84vh;
+    margin-top:2vh;
+    background:transparent;
+    border-radius:10px;
+    overflow:hidden;
+    transform:translateY(26px) scale(.985);
+    opacity:0;
+    transition:transform .7s var(--ease), opacity .7s var(--ease);
+  }
+  #project-viewer.open #project-sheet{ transform:translateY(0) scale(1); opacity:1; }
+
+  #board-scroll{
+    position:absolute; inset:0;
+    overflow-x:auto; overflow-y:auto;
+    display:flex; align-items:center;
+    scrollbar-width:none;
+    cursor:grab;
+    touch-action:none;
+  }
+  #board-scroll::-webkit-scrollbar{ display:none; }
+  #board-scroll.dragging{ cursor:grabbing; }
+  #board-track{
+    display:flex; align-items:center; height:100%;
+    padding:0 4vw 0 19vw;
+    gap:3vw;
+    --board-zoom:1;
+  }
+  #board-track img{
+    height:calc(88% * var(--board-zoom));
+    width:auto;
+    max-width:none;
+    display:block;
+    box-shadow:0 18px 50px rgba(20,10,4,.28);
+    border-radius:2px;
+    user-select:none; -webkit-user-drag:none;
+    transition:height .18s var(--ease);
+  }
+
+  .zoom-controls{
+    position:absolute; right:2.4vw; bottom:2.2vh; z-index:6;
+    display:flex; gap:.5rem;
+  }
+  .zoom-btn{
+    width:34px; height:34px; border-radius:50%;
+    background:rgba(244,239,230,.9);
+    border:1px solid rgba(74,39,18,.3);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; user-select:none;
+    font-family:'Bodoni Moda', serif; font-size:1.1rem; color:var(--brown-deep);
+    transition:background .25s, transform .25s;
+  }
+  .zoom-btn:hover{ background:#fff; transform:scale(1.08); }
+
+  .scroll-hint{
+    position:absolute; bottom:3.2%; left:50%; transform:translateX(-50%);
+    font-family:'Bodoni Moda', serif; font-size:.66rem; letter-spacing:.18em;
+    color:var(--brown-soft); opacity:.75; pointer-events:none;
+  }
+
+  /* persistent corner garment — sits outside the project sheet, over the
+     dimmed homepage, so it never covers the board content */
+  #corner-garment{
+    position:absolute; top:2vh; left:1.5vw; z-index:5;
+    width:min(15vw, 190px);
+    pointer-events:none;
+  }
+  #corner-garment.cg-scale-125{
+    width:min(21.56vw, 273px);
+  }
+  #corner-garment .cg-inner{
+    position:relative; width:100%; aspect-ratio:380/560;
+    -webkit-mask-image:radial-gradient(ellipse 58% 56% at 50% 48%, #000 55%, transparent 100%);
+    mask-image:radial-gradient(ellipse 58% 56% at 50% 48%, #000 55%, transparent 100%);
+    animation:garmentSway 5.5s ease-in-out infinite;
+    transform-origin:50% 6%;
+  }
+  #corner-garment video{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
+    opacity:0; transition:opacity .6s var(--ease);
+  }
+  #corner-garment video.show{ opacity:1; }
+  #corner-garment img#cg-frame{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
+    opacity:0; transition:opacity .6s var(--ease);
+  }
+  #corner-garment img#cg-frame.show{ opacity:1; }
+  @keyframes garmentSway{
+    0%,100%{ transform:rotate(-1.1deg); }
+    50%{ transform:rotate(1.1deg); }
+  }
+
+  .close-x{
+    position:absolute; top:2.2vh; right:2.4vw; z-index:6;
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(244,239,230,.9);
+    border:1px solid rgba(74,39,18,.3);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:transform .35s var(--ease), background .35s;
+  }
+  .close-x:hover{ transform:rotate(90deg); background:#fff; }
+  .close-x svg{ width:16px; height:16px; }
+
+  .project-heading{
+    position:absolute; top:2.2vh; left:50%; transform:translateX(-50%);
+    font-family:'Bodoni Moda', serif; font-weight:600; letter-spacing:.16em;
+    font-size:.78rem; color:var(--brown-mid); text-align:center; z-index:5;
+  }
+
+  /* ================= SOCIAL CAROUSEL EXPERIENCE ================= */
+  #carousel-viewer{
+    position:fixed; inset:0; z-index:55;
+    opacity:0; pointer-events:none;
+    transition:opacity .7s var(--ease);
+    background:transparent;
+    overflow:hidden;
+  }
+  #carousel-viewer.open{ opacity:1; pointer-events:auto; }
+  #carousel-stage{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-52%);
+    width:min(76vw, 900px);
+    aspect-ratio:640/508;
+    pointer-events:none;
+  }
+  #carousel-stage img{ width:100%; height:100%; object-fit:contain; }
+
+  #photo-rail-wrap{
+    position:absolute; left:50%; top:58%;
+    width:min(76vw, 900px);
+    height:34vh; max-height:280px;
+    transform:translate(-50%,-50%);
+    overflow:hidden;
+    cursor:grab;
+    -webkit-mask-image:linear-gradient(to right, transparent 0%, #000 16%, #000 84%, transparent 100%);
+    mask-image:linear-gradient(to right, transparent 0%, #000 16%, #000 84%, transparent 100%);
+  }
+  #photo-rail-wrap.dragging{ cursor:grabbing; }
+  #photo-track{
+    position:absolute; top:0; left:50%; height:100%;
+    display:flex; align-items:center; gap:2.4vw;
+    will-change:transform;
+  }
+  .photo-card{
+    width:15vw; max-width:190px; min-width:130px;
+    height:82%;
+    border-radius:8px;
+    background-size:cover;
+    background-position:center;
+    display:flex; align-items:flex-end;
+    padding:.9rem;
+    box-shadow:0 14px 30px rgba(20,10,4,.35);
+    flex-shrink:0;
+    transition:box-shadow .3s;
+    user-select:none;
+  }
+  .photo-card span{
+    font-family:'Bodoni Moda', serif; font-weight:600; font-size:.72rem;
+    letter-spacing:.05em; color:#fbf5ea; text-shadow:0 1px 4px rgba(0,0,0,.5);
+  }
+
+  #carousel-caption{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    font-family:'Bodoni Moda', serif; font-weight:700; letter-spacing:.06em;
+    font-size:1.1rem; color:var(--brown-mid); text-align:center; line-height:1.3;
+    background:rgba(253,239,188,.92);
+    padding:.7em 1.1em; border-radius:16px;
+    box-shadow:0 8px 22px rgba(20,10,4,.22);
+    pointer-events:none;
+  }
+
+  @media (max-width: 780px){
+    #hs-esmod{ left:34%; width:16%; top:15%; height:80%; }
+    #hs-livy-a{ left:46%; width:8%; top:28%; height:34%; }
+    #hs-livy-b{ left:54%; width:8.5%; top:28%; height:34%; }
+    .section-row{ flex-direction:column; }
+    #contact-panel{ flex-basis:auto; min-width:0; width:100%; }
+    #carousel-panel{ flex-basis:auto; min-width:0; width:100%; }
+    #contact-panel .scallop-frame{
+      position:static; transform:none; width:64%; max-width:220px;
+      margin:2.4rem auto 0;
+    }
+    #contact-panel .scallop-frame:hover{ transform:scale(1.035); }
+    #project-sheet{ width:96vw; height:80vh; }
+    #board-track{ padding:0 8vw 0 24vw; gap:10vw; }
+    .hotspot-label{ font-size:.7rem; }
+    #hero-cue{ max-width:100px; font-size:.6rem; left:3.5%; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= HERO ================= -->
+  <section id="hero">
+    <div id="hero-photo">
+      <button class="hotspot" id="hs-esmod" aria-label="Open ESMOD Final Project" data-label="ESMOD Final Project" onclick="openProject('esmod', this)">
+        <span class="glow"></span>
+      </button>
+
+      <button class="hotspot" id="hs-livy-a" aria-label="Open LIVY, Cyclone" data-label="LIVY — Cyclone" onclick="openProject('livyCyclone', this)">
+        <span class="glow"></span>
+      </button>
+
+      <button class="hotspot" id="hs-livy-b" aria-label="Open LIVY, Bloom Garden" data-label="LIVY — Bloom Garden" onclick="openProject('livyBloom', this)">
+        <span class="glow"></span>
+      </button>
+    </div>
+
+    <p id="hero-cue">CLICK ON A<br>GARMENT TO<br>SEE PROJECT</p>
+
+    <div id="hero-identity">
+      <h1 id="hero-name" class="script">Caroline Ehrngren</h1>
+      <p id="hero-title" class="bodoni">Fashion Designer &amp; Product Developer</p>
+    </div>
+  </section>
+
+  <!-- ================= BELOW THE FOLD ================= -->
+  <section id="below-fold">
+    <div class="section-row">
+      <div class="panel" id="contact-panel">
+        <h3 class="bodoni">CONTACT</h3>
+        <div class="contact-links">
+          <a href="mailto:caroline.ehrngren@gmail.com">Email: caroline.ehrngren@gmail.com</a>
+          <a href="https://www.linkedin.com/in/caroline-ehrngren-85a6621b5" target="_blank" rel="noopener">LinkedIn: Caroline Ehrngren</a>
+        </div>
+
+        <div class="scallop-frame" id="cvmap-plaque" onclick="openProject('cvmindmap', this)" role="button" tabindex="0" aria-label="Open CV and Mindmap">
+          <img src="assets/asset-f1379c86f9.png" alt="CV &amp; Mindmap" draggable="false">
+        </div>
+      </div>
+
+      <div id="carousel-panel" onclick="openCarousel()" role="button" tabindex="0" aria-label="Open Caroline's Social Carousel">
+        <div class="mini-carousel-wrap">
+          <img src="assets/asset-0421561489.webp" alt="Caroline's Social Carousel" draggable="false">
+          <div class="cap bodoni">Caroline's<br>Social Carousel</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer bodoni">CAROLINE EHRNGREN &nbsp;·&nbsp; STOCKHOLM &amp; PARIS</footer>
+  </section>
+
+  <div id="hover-tip" class="bodoni"></div>
+
+  <img id="fly-garment" alt="" draggable="false">
+
+  <!-- ================= PROJECT VIEWER ================= -->
+  <div id="project-viewer">
+    <div id="project-sheet">
+      <div class="project-heading bodoni" id="project-heading-text"></div>
+      <div class="close-x" onclick="closeProject()" aria-label="Close project">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#452209" stroke-width="1.6" stroke-linecap="round"><path d="M4 4L20 20M20 4L4 20"/></svg>
+      </div>
+
+      <div id="board-scroll">
+        <div id="board-track"></div>
+      </div>
+      <div class="scroll-hint bodoni">SCROLL TO EXPLORE →</div>
+
+      <div class="zoom-controls">
+        <div class="zoom-btn" onclick="setBoardZoom(boardZoom - 0.25)" aria-label="Zoom out" role="button">−</div>
+        <div class="zoom-btn" onclick="setBoardZoom(boardZoom + 0.25)" aria-label="Zoom in" role="button">+</div>
+      </div>
+    </div>
+
+    <div id="corner-garment">
+      <div class="cg-inner">
+        <video id="cg-vid-a" muted loop playsinline autoplay></video>
+        <video id="cg-vid-b" muted loop playsinline autoplay></video>
+        <img id="cg-frame" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SOCIAL CAROUSEL VIEWER ================= -->
+  <div id="carousel-viewer">
+    <div class="close-x" onclick="closeCarousel()" aria-label="Close carousel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#452209" stroke-width="1.6" stroke-linecap="round"><path d="M4 4L20 20M20 4L4 20"/></svg>
+    </div>
+
+    <div id="corner-garment-2" style="position:absolute; top:1.6vh; left:2vw; z-index:5; width:min(14vw,170px); animation:carouselDrift 9s ease-in-out infinite;">
+      <img id="cg2-frame" alt="" style="width:100%; height:auto; display:block;">
+    </div>
+
+    <div id="carousel-stage">
+      <img src="assets/asset-0421561489.webp" alt="Social carousel" draggable="false">
+    </div>
+
+    <div id="photo-rail-wrap">
+      <div id="photo-track"></div>
+    </div>
+
+    <div class="scroll-hint bodoni" style="bottom:5%;">DRAG OR SCROLL TO BROWSE</div>
+  </div>
+
+<script>
+/* ============================================================
+   ASSET REGISTRY
+   ============================================================ */
+const ASSETS = {
+  socialPhoto1: "assets/asset-7c2251534f.jpg",
+  socialPhoto2: "assets/asset-9efcd42b30.jpg",
+  socialPhoto3: "assets/asset-bd6591c000.jpg",
+  socialPhoto4: "assets/asset-8f10ebdfdd.jpg",
+  socialPhoto5: "assets/asset-b5d081e9b3.jpg",
+  socialPhoto6: "assets/asset-f13f4c2d33.jpg",
+  socialPhoto7: "assets/asset-1aaf11add2.jpg",
+  socialPhoto8: "assets/asset-8f1e73a148.jpg",
+  socialPhoto9: "assets/asset-22f554e449.jpg",
+  socialPhoto10: "assets/asset-66d993fd25.jpg",
+  socialPhoto11: "assets/asset-b839d20ad8.jpg",
+  socialPhoto12: "assets/asset-8d1e3adfc0.jpg",
+  socialPhoto13: "assets/asset-938517c59f.jpg",
+  socialPhoto14: "assets/asset-d05608db88.jpg",
+  socialPhoto15: "assets/asset-e52092390b.jpg",
+  socialPhoto16: "assets/asset-4d6cb5f8d3.jpg",
+  socialPhoto17: "assets/asset-062626cb31.jpg",
+  socialPhoto18: "assets/asset-c9eae92245.jpg",
+  socialPhoto19: "assets/asset-954393eb3c.jpg",
+  socialPhoto20: "assets/asset-883cc189a6.jpg",
+  socialPhoto21: "assets/asset-37fc46384f.jpg",
+  socialPhoto22: "assets/asset-5f81a787e9.jpg",
+  socialPhoto23: "assets/asset-8d1f8f0a1e.jpg",
+  carouselFrame1: "assets/asset-658e73e05f.png",
+  carouselFrame2: "assets/asset-1587c35645.png",
+  carouselFrame3: "assets/asset-7874ba2f19.png",
+  carouselFrame4: "assets/asset-1696793614.png",
+  esmodFrame1: "assets/asset-a00ba0f944.png",
+  esmodFrame2: "assets/asset-c532b76808.png",
+  esmodFrame3: "assets/asset-90a488924b.png",
+  esmodFrame4: "assets/asset-1b5f341df0.png",
+  cycloneFrame1: "assets/asset-8065a75bd6.png",
+  cycloneFrame2: "assets/asset-2b0a5bd266.png",
+  cycloneFrame3: "assets/asset-935e3defdf.png",
+  livyBloomFrame1: "assets/asset-e3d578b3ca.png",
+  livyBloomFrame2: "assets/asset-601d1dcdc3.png",
+  livyBloomFrame3: "assets/asset-bc06a269db.png",
+  livyBloomFlyStill: "assets/asset-ac84d67364.png",
+  esmodBoard: "assets/asset-fc16e87112.png",
+  cycloneBoard: "assets/asset-3bbfceb80d.png",
+  bloomBoard: "assets/asset-af37a9df7b.png",
+  cvMindmapBoard: "assets/asset-23d59a8119.png",
+};
+
+const PROJECTS = {
+  esmod: {
+    heading: "ESMOD FINAL PROJECT — GRADUATION COLLECTION",
+    badge: "ESMOD",
+    boards: [ { src: ASSETS.esmodBoard, garment: [ASSETS.esmodFrame1, ASSETS.esmodFrame2, ASSETS.esmodFrame3, ASSETS.esmodFrame4] } ],
+    flyImage: ASSETS.esmodFrame1,
+    cornerScale: 1.25
+  },
+  livyBloom: {
+    heading: "LIVY — BLOOM GARDEN",
+    badge: "LIVY",
+    boards: [ { src: ASSETS.bloomBoard, garment: [ASSETS.livyBloomFrame1, ASSETS.livyBloomFrame2, ASSETS.livyBloomFrame3] } ],
+    flyImage: ASSETS.livyBloomFlyStill
+  },
+  livyCyclone: {
+    heading: "LIVY — CYCLONE",
+    badge: "LIVY",
+    boards: [ { src: ASSETS.cycloneBoard, garment: [ASSETS.cycloneFrame1, ASSETS.cycloneFrame2, ASSETS.cycloneFrame3] } ],
+    flyImage: ASSETS.cycloneFrame1
+  },
+  cvmindmap: {
+    heading: "CV & MINDMAP",
+    badge: "",
+    boards: [ { src: ASSETS.cvMindmapBoard, garment: null } ]
+  }
+};
+
+/* ============================================================
+   SMOOTH HORIZONTAL SCROLL (wheel + drag + touch), with a
+   position callback for garment-swap / carousel-scale logic.
+   ============================================================ */
+function makeHorizontalScroller(el, onUpdate){
+  let dragging = false, startX = 0, startY = 0, startScroll = 0, startScrollY = 0;
+  let lastX = 0, lastY = 0, vx = 0, vy = 0, raf = null;
+
+  el.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if(e.ctrlKey){
+      setBoardZoom(boardZoom - e.deltaY * 0.01);
+      onUpdate && onUpdate();
+      return;
+    }
+    if(boardZoom > 1){
+      // zoomed in: pan freely in both directions
+      el.scrollLeft += e.deltaX;
+      el.scrollTop += e.deltaY;
+    } else {
+      // normal browsing: any wheel motion pans the horizontal gallery
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      el.scrollLeft += delta;
+    }
+    onUpdate && onUpdate();
+  }, { passive:false });
+
+  el.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    el.classList.add('dragging');
+    startX = e.clientX; lastX = e.clientX; startScroll = el.scrollLeft; vx = 0;
+    startY = e.clientY; lastY = e.clientY; startScrollY = el.scrollTop; vy = 0;
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove', (e) => {
+    if(!dragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    vx = e.clientX - lastX; lastX = e.clientX;
+    vy = e.clientY - lastY; lastY = e.clientY;
+    el.scrollLeft = startScroll - dx;
+    el.scrollTop = startScrollY - dy;
+    onUpdate && onUpdate();
+  });
+  function endDrag(e){
+    if(!dragging) return;
+    dragging = false;
+    el.classList.remove('dragging');
+    // simple momentum
+    let v = -vx * 2.2, vv = -vy * 2.2;
+    function glide(){
+      if(Math.abs(v) < 0.5 && Math.abs(vv) < 0.5){ return; }
+      el.scrollLeft += v;
+      el.scrollTop += vv;
+      v *= 0.93; vv *= 0.93;
+      onUpdate && onUpdate();
+      raf = requestAnimationFrame(glide);
+    }
+    cancelAnimationFrame(raf);
+    glide();
+  }
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointerleave', endDrag);
+  el.addEventListener('scroll', () => onUpdate && onUpdate(), { passive:true });
+}
+
+/* ============================================================
+   PROJECT VIEWER
+   ============================================================ */
+const viewer = document.getElementById('project-viewer');
+const boardScroll = document.getElementById('board-scroll');
+const boardTrack = document.getElementById('board-track');
+const headingEl = document.getElementById('project-heading-text');
+const vidA = document.getElementById('cg-vid-a');
+const vidB = document.getElementById('cg-vid-b');
+const cgFrameEl = document.getElementById('cg-frame');
+const cornerGarmentEl = document.getElementById('corner-garment');
+const flyEl = document.getElementById('fly-garment');
+let currentBoards = [];
+let scrollerBound = false;
+let flyHandler = null;
+let frameInterval = null;
+let activeFrames = null;
+let returnFlyContext = null;
+let boardZoom = 1;
+const BOARD_ZOOM_MIN = 1, BOARD_ZOOM_MAX = 2.2;
+
+function setBoardZoom(z){
+  boardZoom = Math.min(BOARD_ZOOM_MAX, Math.max(BOARD_ZOOM_MIN, z));
+  boardTrack.style.setProperty('--board-zoom', boardZoom);
+}
+
+function stopFrameCycle(){
+  if(frameInterval){ clearInterval(frameInterval); frameInterval = null; }
+  activeFrames = null;
+  cgFrameEl.classList.remove('show');
+}
+
+function startFrameCycle(frames){
+  if(activeFrames === frames) return;
+  stopFrameCycle();
+  activeFrames = frames;
+  let i = 0;
+  cgFrameEl.src = frames[0];
+  cgFrameEl.classList.add('show');
+  frameInterval = setInterval(() => {
+    i = (i + 1) % frames.length;
+    cgFrameEl.src = frames[i];
+  }, 333);
+}
+
+function cancelFlight(){
+  if(flyHandler){
+    flyEl.removeEventListener('transitionend', flyHandler);
+    flyHandler = null;
+  }
+  flyEl.classList.remove('flying');
+  flyEl.style.opacity = '0';
+}
+
+function flyGarmentTo(startRect, endRect, imgSrc, onDone){
+  cancelFlight();
+  flyEl.src = imgSrc;
+  flyEl.classList.remove('flying');
+  flyEl.style.top = startRect.top + 'px';
+  flyEl.style.left = startRect.left + 'px';
+  flyEl.style.width = startRect.width + 'px';
+  flyEl.style.height = startRect.height + 'px';
+  flyEl.style.opacity = '1';
+
+  // force reflow so the start position is committed before transitioning
+  void flyEl.offsetHeight;
+
+  requestAnimationFrame(() => {
+    flyEl.classList.add('flying');
+    flyEl.style.top = endRect.top + 'px';
+    flyEl.style.left = endRect.left + 'px';
+    flyEl.style.width = endRect.width + 'px';
+    flyEl.style.height = endRect.height + 'px';
+  });
+
+  flyHandler = (e) => {
+    if(e.target !== flyEl || e.propertyName !== 'left') return;
+    flyEl.removeEventListener('transitionend', flyHandler);
+    flyHandler = null;
+    flyEl.style.opacity = '0';
+    flyEl.classList.remove('flying');
+    onDone && onDone();
+  };
+  flyEl.addEventListener('transitionend', flyHandler);
+}
+
+function buildBoards(project){
+  boardTrack.innerHTML = '';
+  currentBoards = [];
+  project.boards.forEach((b) => {
+    const img = document.createElement('img');
+    img.src = b.src;
+    img.draggable = false;
+    boardTrack.appendChild(img);
+    currentBoards.push({ el: img, garment: b.garment });
+  });
+}
+
+function updateCornerGarment(){
+  if(currentBoards.length === 0) return;
+  // figure out which board is most centered in viewport
+  const wrapRect = boardScroll.getBoundingClientRect();
+  const center = wrapRect.left + wrapRect.width/2;
+  let closest = currentBoards[0], bestDist = Infinity;
+  currentBoards.forEach(b => {
+    const r = b.el.getBoundingClientRect();
+    const bc = r.left + r.width/2;
+    const d = Math.abs(bc - center);
+    if(d < bestDist){ bestDist = d; closest = b; }
+  });
+  const src = closest.garment;
+  if(!src){
+    vidA.classList.remove('show'); vidB.classList.remove('show');
+    stopFrameCycle();
+    return;
+  }
+  if(Array.isArray(src)){
+    vidA.classList.remove('show'); vidB.classList.remove('show');
+    startFrameCycle(src);
+    return;
+  }
+  stopFrameCycle();
+  const active = vidA.classList.contains('show') ? vidA : (vidB.classList.contains('show') ? vidB : null);
+  const activeSrc = active ? active.getAttribute('src') : null;
+  if(activeSrc === src) return;
+  const incoming = (active === vidA) ? vidB : vidA;
+  const outgoing = active;
+  incoming.src = src;
+  incoming.play().catch(()=>{});
+  incoming.classList.add('show');
+  if(outgoing) outgoing.classList.remove('show');
+}
+
+function openProject(id, triggerEl){
+  const project = PROJECTS[id];
+  if(!project) return;
+  buildBoards(project);
+  headingEl.textContent = project.heading;
+  vidA.classList.remove('show'); vidB.classList.remove('show');
+  vidA.removeAttribute('src'); vidB.removeAttribute('src');
+  stopFrameCycle();
+  setBoardZoom(1);
+  cornerGarmentEl.classList.toggle('cg-scale-125', project.cornerScale === 1.25);
+
+  const startRect = (triggerEl && project.flyImage) ? triggerEl.getBoundingClientRect() : null;
+  returnFlyContext = null;
+
+  window.scrollTo(0, 0);
+  document.body.classList.add('locked', 'overlay-open');
+  viewer.classList.add('open');
+
+  requestAnimationFrame(() => {
+    boardScroll.scrollLeft = 0;
+    boardScroll.scrollTop = 0;
+    if(startRect){
+      const endRect = cornerGarmentEl.getBoundingClientRect();
+      flyGarmentTo(startRect, endRect, project.flyImage, updateCornerGarment);
+      returnFlyContext = { startRect, flyImage: project.flyImage };
+    } else {
+      updateCornerGarment();
+    }
+  });
+
+  if(!scrollerBound){
+    makeHorizontalScroller(boardScroll, updateCornerGarment);
+    scrollerBound = true;
+  }
+}
+
+function closeProject(){
+  if(returnFlyContext){
+    const currentRect = cornerGarmentEl.getBoundingClientRect();
+    vidA.classList.remove('show'); vidB.classList.remove('show');
+    stopFrameCycle();
+    flyGarmentTo(currentRect, returnFlyContext.startRect, returnFlyContext.flyImage, null);
+    returnFlyContext = null;
+  } else {
+    cancelFlight();
+    stopFrameCycle();
+  }
+  viewer.classList.remove('open');
+  document.body.classList.remove('locked', 'overlay-open');
+}
+
+/* ============================================================
+   SOCIAL CAROUSEL
+   ============================================================ */
+const carouselViewer = document.getElementById('carousel-viewer');
+const photoWrap = document.getElementById('photo-rail-wrap');
+const photoTrack = document.getElementById('photo-track');
+const cg2FrameEl = document.getElementById('cg2-frame');
+
+const CAROUSEL_CORNER_FRAMES = [ASSETS.carouselFrame1, ASSETS.carouselFrame2, ASSETS.carouselFrame3, ASSETS.carouselFrame4];
+let cg2Interval = null;
+
+function startCarouselCornerCycle(){
+  stopCarouselCornerCycle();
+  let i = 0;
+  cg2FrameEl.src = CAROUSEL_CORNER_FRAMES[0];
+  cg2Interval = setInterval(() => {
+    i = (i + 1) % CAROUSEL_CORNER_FRAMES.length;
+    cg2FrameEl.src = CAROUSEL_CORNER_FRAMES[i];
+  }, 333);
+}
+function stopCarouselCornerCycle(){
+  if(cg2Interval){ clearInterval(cg2Interval); cg2Interval = null; }
+}
+
+const PHOTO_DATA_SOURCE = [
+  ASSETS.socialPhoto1, ASSETS.socialPhoto2, ASSETS.socialPhoto3, ASSETS.socialPhoto4,
+  ASSETS.socialPhoto5, ASSETS.socialPhoto6, ASSETS.socialPhoto7, ASSETS.socialPhoto8,
+  ASSETS.socialPhoto9, ASSETS.socialPhoto10, ASSETS.socialPhoto11, ASSETS.socialPhoto12,
+  ASSETS.socialPhoto13, ASSETS.socialPhoto14, ASSETS.socialPhoto15, ASSETS.socialPhoto16,
+  ASSETS.socialPhoto17, ASSETS.socialPhoto18, ASSETS.socialPhoto19, ASSETS.socialPhoto20,
+  ASSETS.socialPhoto21, ASSETS.socialPhoto22, ASSETS.socialPhoto23
+];
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const PHOTO_DATA = shuffle(PHOTO_DATA_SOURCE);
+
+let carouselBuilt = false;
+const PHOTO_REPEAT = 5;
+let singleSetWidth = 0;
+
+function buildCarouselPhotos(){
+  if(carouselBuilt) return;
+  photoTrack.innerHTML = '';
+  for(let r = 0; r < PHOTO_REPEAT; r++){
+    PHOTO_DATA.forEach(src => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.style.backgroundImage = `url(${src})`;
+      photoTrack.appendChild(card);
+    });
+  }
+  carouselBuilt = true;
+  singleSetWidth = photoTrack.scrollWidth / PHOTO_REPEAT;
+}
+
+function updatePhotoScales(){
+  const wrapRect = photoWrap.getBoundingClientRect();
+  const center = wrapRect.left + wrapRect.width/2;
+  const cards = photoTrack.querySelectorAll('.photo-card');
+  cards.forEach(card => {
+    const r = card.getBoundingClientRect();
+    const cc = r.left + r.width/2;
+    const dist = Math.abs(cc - center);
+    const norm = Math.min(dist / (wrapRect.width*0.5), 1);
+    const scale = 1.18 - norm*0.42;
+    const opacity = 1 - norm*0.55;
+    card.style.transform = `scale(${scale})`;
+    card.style.opacity = opacity.toFixed(2);
+    card.style.zIndex = Math.round((1-norm)*100);
+  });
+}
+
+let carouselOffset = 0;
+let dragStartX = 0, dragStartOffset = 0, dragging2 = false, lastX2=0, vx2=0, raf2=null;
+let carouselCentered = false;
+
+function applyOffset(){
+  if(singleSetWidth > 0){
+    const shift = singleSetWidth * (PHOTO_REPEAT - 2);
+    if(carouselOffset > -singleSetWidth){
+      carouselOffset -= shift;
+      dragStartOffset -= shift;
+    } else if(carouselOffset < -singleSetWidth * (PHOTO_REPEAT - 1)){
+      carouselOffset += shift;
+      dragStartOffset += shift;
+    }
+  }
+  photoTrack.style.transform = `translateX(${carouselOffset}px)`;
+  updatePhotoScales();
+}
+
+function centerCarouselOnce(){
+  if(carouselCentered) return;
+  const trackWidth = photoTrack.scrollWidth;
+  carouselOffset = -trackWidth/2 + 40;
+  applyOffset();
+  carouselCentered = true;
+}
+
+photoWrap.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  carouselOffset -= delta;
+  applyOffset();
+}, { passive:false });
+
+photoWrap.addEventListener('pointerdown', (e) => {
+  dragging2 = true;
+  photoWrap.classList.add('dragging');
+  dragStartX = e.clientX; lastX2 = e.clientX; dragStartOffset = carouselOffset; vx2 = 0;
+  photoWrap.setPointerCapture(e.pointerId);
+});
+photoWrap.addEventListener('pointermove', (e) => {
+  if(!dragging2) return;
+  const dx = e.clientX - dragStartX;
+  vx2 = e.clientX - lastX2; lastX2 = e.clientX;
+  carouselOffset = dragStartOffset + dx;
+  applyOffset();
+});
+function endDrag2(){
+  if(!dragging2) return;
+  dragging2 = false;
+  photoWrap.classList.remove('dragging');
+  let v = vx2 * 1.8;
+  function glide(){
+    if(Math.abs(v) < 0.4) return;
+    carouselOffset += v;
+    v *= 0.93;
+    applyOffset();
+    raf2 = requestAnimationFrame(glide);
+  }
+  cancelAnimationFrame(raf2);
+  glide();
+}
+photoWrap.addEventListener('pointerup', endDrag2);
+photoWrap.addEventListener('pointerleave', endDrag2);
+
+function openCarousel(){
+  buildCarouselPhotos();
+  window.scrollTo(0, 0);
+  document.body.classList.add('locked', 'overlay-open');
+  carouselViewer.classList.add('open');
+  startCarouselCornerCycle();
+  requestAnimationFrame(() => {
+    centerCarouselOnce();
+  });
+}
+function closeCarousel(){
+  carouselViewer.classList.remove('open');
+  document.body.classList.remove('locked', 'overlay-open');
+  stopCarouselCornerCycle();
+}
+
+/* ============================================================
+   HOVER TIP — follows the cursor above garment hotspots
+   ============================================================ */
+const hoverTip = document.getElementById('hover-tip');
+document.querySelectorAll('.hotspot').forEach(hs => {
+  const label = hs.getAttribute('data-label') || '';
+  hs.addEventListener('mouseenter', () => {
+    hoverTip.textContent = label;
+    hoverTip.classList.add('show');
+  });
+  hs.addEventListener('mousemove', (e) => {
+    hoverTip.style.left = e.clientX + 'px';
+    hoverTip.style.top = e.clientY + 'px';
+  });
+  hs.addEventListener('mouseleave', () => {
+    hoverTip.classList.remove('show');
+  });
+});
+
+/* keyboard close */
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape'){
+    closeProject();
+    closeCarousel();
+  }
+});
+</script>
+</body>
+</html>
